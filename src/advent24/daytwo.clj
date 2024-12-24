@@ -37,8 +37,16 @@
 
 ;; Let's try brute forcing it first
 
+(defn is-forceable-safe [report]
+  (if (is-safe report) true
+      (let [indices (range 0 (count report))
+            report-vec (vec report)
+            safe-drop-index (fn [idx]
+                              (let [trimmed-report (into (subvec report-vec 0 idx) (subvec report-vec (inc idx)))]
+                                (is-safe trimmed-report)))]
+        (not (nil? (some safe-drop-index indices))))))
+
 (defn -main [path]
- ;; (let [reports (advent24.core/load-input parse-line path)
- ;;       safe-count (count (filter is-safe reports))]
- ;;   (println safe-count))
-  )
+  (let [reports (advent24.core/load-input parse-line path)
+        safe-count (count (filter is-forceable-safe reports))]
+    (println safe-count)))
