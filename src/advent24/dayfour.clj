@@ -49,9 +49,38 @@
                       j (range num-col)]
                   (count-xmas m i j num-row num-col)))))
 
+(def ms-combinations
+  [{:m [:ne :nw] :s [:se :sw]}
+   {:m [:se :sw] :s [:ne :nw]}
+   {:m [:ne :se] :s [:nw :sw]}
+   {:m [:nw :sw] :s [:ne :se]}])
+
+(defn has-x-mas? [m i j num-row num-col direction]
+  (let [m-directions (map (fn [d] ["M" (move d [i j])]) (:m direction))
+        s-directions (map (fn [d] ["S" (move d [i j])]) (:s direction))
+        location-letters (concat m-directions s-directions)
+        check-value (fn [[v [r c]]] (has-value? v m r c num-row num-col))
+        value-match (map check-value location-letters)]
+    (reduce #(and %1 %2) true value-match)))
+
+(defn count-x-mas [m i j num-row num-col]
+  (let [v (get-in m [i j])]
+    (case v
+      "A" (count (filter (partial has-x-mas? m i j num-row num-col) ms-combinations))
+      ;; default
+      0)))
+
+(defn part-two [m]
+  (let [num-row (count m)
+        num-col (count (first m))]
+    (reduce + 0 (for [i (range num-row)
+                      j (range num-col)
+                      :when (= "A" (get-in m [i j]))]
+                  (count-x-mas m i j num-row num-col)))))
+
 (defn -main [path]
   (let [m (core/load-input parse-line path)]
     (-> m
         vec ;; convert from a lazyseq to a vector
-        part-one
+        part-two
         println)))

@@ -25,3 +25,7 @@
 (t/deftest test-part-one
   (t/testing "counts 18 in sample"
     (t/is (= 18 (dayfour/part-one M)))))
+
+(t/deftest test-part-two
+  (t/testing "counts 9 in sample"
+    (t/is (= 9 (dayfour/part-two M)))))

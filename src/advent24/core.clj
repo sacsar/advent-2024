@@ -9,6 +9,9 @@
 (defn unzip [pairs]
   (apply zip pairs))
 
+(defn set-minus [s coll]
+  (reduce disj s coll))
+
 (defn load-input [parse-line path]
   (let [lines (with-open [rdr (io/reader path)]
                 (into [] (line-seq rdr)))]
