@@ -38,6 +38,23 @@
       ;; otherwise, recurse
       :else (ordered-instruction? relation-map remainder))))
 
+;; for part two to be well-defined, we must actually have a total order,
+;; so we can just sort
+(defn build-comparator [relation-map]
+  (fn [a b]
+    (contains? (get-in relation-map [:lt a] #{}) b)))
+
+(defn repair-instruction [comparator instruction]
+  (vec (sort comparator instruction)))
+
+(defn part-two [instructions relation-map]
+  (let [cmp (build-comparator relation-map)]
+    (->> instructions
+         (filter #(not (ordered-instruction? relation-map %1)))
+         (map #(repair-instruction cmp %1))
+         (map get-center)
+         (reduce + 0))))
+
 (defn part-one [instructions relation-map]
   (reduce + 0 (map get-center (filter (partial ordered-instruction? relation-map) instructions))))
 
@@ -51,4 +68,4 @@
 (defn -main [path]
   ;; since the input is in two pieces, using the core function doesn't make sense here
   (let [[relation-map instructions] (load-input path)]
-    (println (part-one instructions relation-map))))
+    (println (part-two instructions relation-map))))
